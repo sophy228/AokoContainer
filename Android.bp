@@ -1,0 +1,55 @@
+cc_library_static {
+  name: "libclrutils",
+  srcs: [
+    "lib/loopdev.cpp",
+    "lib/privileges.cpp",
+    "lib/ns_lib.cpp",
+  ],
+  shared_libs:[
+    "libbase",
+  ],
+}
+
+
+
+cc_binary {
+  name: "clrd",
+  srcs:[
+    "clrd_loop.cpp",
+    "clrd_child_main.cpp",
+    "clrd_namespace.cpp",
+    "clrd.cpp",
+    "clrd_linuxinit.cpp",
+    "clrd_mount.cpp",
+    "clrd_selinux.cpp",
+    "fuse_files/clrd_fuse.cpp",
+    "fuse_files/resolv.cpp",
+    "fuse_files/usergroup.cpp",
+  ],
+  static_libs:[
+    "libclrutils",
+    "libfuse",
+  ],
+  shared_libs: [
+    "libbase",
+    "libselinux",
+    "libcutils",
+    
+  ],
+  init_rc: ["clrd.rc"],
+}
+
+
+cc_binary {
+  name: "clrc",
+  srcs:[
+    "clrc_main.cpp",
+  ],
+  static_libs:[
+    "libclrutils"
+  ],
+  shared_libs: [
+    "libbase",
+    "libcutils",
+  ],
+}

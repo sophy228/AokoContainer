@@ -1,0 +1,8 @@
+service clrd /system/bin/clrd -p -l /data/vendor/rootfs.img  -t /data/vendor/rootfs
+    user root
+    group system
+    oneshot
+    disabled
+
+on post-fs-data
+    mkdir /data/vendor/rootfs 0777 root root
