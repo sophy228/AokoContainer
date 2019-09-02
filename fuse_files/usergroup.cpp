@@ -1,13 +1,16 @@
 
+//#include <cutils/properties.h>
+#include <android-base/logging.h>
+
 #include "clrd_fuse.h"
 #include "stddef.h"
 #include "stdlib.h"
 #include "string.h"
 #include "stdio.h"
-#include <cutils/properties.h>
-#include <android-base/logging.h>
+
 #include <sys/types.h>
 #include <pwd.h>
+#include <unistd.h>
 
 #include <iostream>
 #include <sstream>
@@ -22,7 +25,7 @@ static char *content = NULL;
 static void build_content() {
     stringstream str;
     str << "##!/bin/sh \n\n\n";
-    str << "set -e\n\n";
+   // str << "set -e\n\n";
     str << "usergroupadd() {\n grep -q ^$2: /etc/group || groupadd -r -g $1 $2 \n grep -q ^$2: /etc/passwd || useradd -r -g $1 -u $1 -d / $2 \n }\n";
     
     struct passwd *pwd;

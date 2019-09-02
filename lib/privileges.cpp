@@ -12,11 +12,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdio.h>
-#include <android-base/logging.h>
+//#include <android-base/logging.h>
 
 int escalate() {
   if(seteuid(0) == -1 || geteuid() != 0) {
-    PLOG(ERROR) << "Failed to escalate privileges.";
+   // PLOG(ERROR) << "Failed to escalate privileges.";
     return 1;
   }
 
@@ -25,7 +25,7 @@ int escalate() {
 
 int drop() {
   if(seteuid(getuid()) == -1 || geteuid() != getuid()) {
-    PLOG(ERROR) << "Failed to drop privileges.";
+   // PLOG(ERROR) << "Failed to drop privileges.";
     return 1;
   }
 

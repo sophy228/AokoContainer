@@ -14,9 +14,11 @@
 #include "resolv.h"
 #include "usergroup.h"
 
-#include <android-base/logging.h>
-#include<map>
 #include <sys/prctl.h>
+
+
+//#include <android-base/logging.h>
+
 
 using namespace std;
 
@@ -195,7 +197,7 @@ static void mkdir_if_no_exist(char * dir) {
        printf("mkdir %s\n", dir);
        int ret = mkdir(dir, 0700);
        if(ret){
-           PLOG(ERROR) << "mkdir failed  " << dir;
+         //  PLOG(ERROR) << "mkdir failed  " << dir;
            printf("mkdir failed\n");
        }
     }

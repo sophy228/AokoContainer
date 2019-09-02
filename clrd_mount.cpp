@@ -4,10 +4,12 @@
 #include <stddef.h>
 #include <string.h>
 
-#include <android-base/logging.h>
+//#include <android-base/logging.h>
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+
 #include "clrd_selinux.h"
 
 struct mount_info{
@@ -66,6 +68,7 @@ static struct mount_info mountlist[] = {
         MS_BIND,
         NULL,
     },
+#ifdef ANDROID
     {
         "/vendor/lib/modules",
         "/lib/modules",
@@ -80,6 +83,15 @@ static struct mount_info mountlist[] = {
         MS_BIND,
         NULL,
     },
+#else
+    {
+        "/etc/resolv.conf",
+        "/etc/resolv.conf",
+        "",
+        MS_BIND | MS_RDONLY,
+        NULL,
+    },
+#endif
 };
 
 static void mkdir_if_no_exist(char * dir) {
@@ -100,11 +112,12 @@ int mount_fs(const char * parent) {
             asprintf(&target, "%s", mi.target);
 
         mkdir_if_no_exist(target);
+#ifdef ANDROID
         change_file_context(target, "u:object_r:clrd_mnt_dir:s0");
-        
+#endif
         int ret = mount(mi.device, target, mi.type, mi.flag, mi.data);
         if(ret) {
-            PLOG(ERROR) << "mount device error at " << target;
+           // PLOG(ERROR) << "mount device error at " << target;
         }
         if(target)
             free(target);
@@ -145,7 +158,7 @@ static int umount_all_fs(const char * parent) {
         int ret = umount2(targetlist[i], MNT_FORCE);
         printf("umount2 %s\n", targetlist[i]);
         if(ret) {
-            PLOG(ERROR) << "umount device error at " << targetlist[i];
+           // PLOG(ERROR) << "umount device error at " << targetlist[i];
             printf("umount2 failed %s\n", targetlist[i]);
         }
         free(targetlist[i]);

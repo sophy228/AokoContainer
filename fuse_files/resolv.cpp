@@ -4,8 +4,10 @@
 #include "stdlib.h"
 #include "string.h"
 #include "stdio.h"
+
+#include <unistd.h>
 #include <cutils/properties.h>
-#include <android-base/logging.h>
+//#include <android-base/logging.h>
 
 #define FILE_NAME "resolv.conf"
 #define DEST_FILE_PATH "/etc/resolv.conf"

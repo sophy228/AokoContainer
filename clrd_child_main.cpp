@@ -6,12 +6,14 @@
 #include <sys/prctl.h>
 #include <linux/capability.h>
 #include <sys/wait.h>
+#include <unistd.h>
+#include <sys/syscall.h>
 
 #include "clrd_linuxinit.h"
 #include "clrd_selinux.h"
 #include "fuse_files/clrd_fuse.h"
 
-#include <android-base/logging.h>
+//#include <android-base/logging.h>
 #include "clrd_child_main.h"
 char* const exec_args[] = {
   "/bin/systemd",
@@ -68,21 +70,21 @@ int child_main(void * configs) {
     printf("mount loop device to %s\n",target_dir);
 
     if(mount(loop_dev, target_dir, "ext4", 0, NULL) != 0) {
-        PLOG(ERROR)<< "Failed to mount loop device " << loop_dev << " to mount point " << target_dir;
+        printf("Failed to mount loop device %s to %s\n", loop_dev, target_dir);
         goto error;
     }
 
-    PLOG(INFO) << "mount rootfs device:" << loop_dev << " on " << target_dir;
+    //PLOG(INFO) << "mount rootfs device:" << loop_dev << " on " << target_dir;
 
-
+#ifdef ANDROID
     setup_selinux_handle();
-
+#endif
     /*pid = fork();
 
     if(pid == 0) {
-        PLOG(INFO) << "chroot to:" << target_dir;
+       // PLOG(INFO) << "chroot to:" << target_dir;
         chroot(target_dir);
-        PLOG(INFO) << "resetlinux context:";
+       // PLOG(INFO) << "resetlinux context:";
         chdir("/");
         setup_selinux_context("/");
         exit(0);
@@ -96,14 +98,17 @@ int child_main(void * configs) {
 
     mkdir_if_no_exist(old_rootdir);
     if(pivot_root(target_dir, old_rootdir)) {
-        PLOG(ERROR)<< "Failed to pivot_root " << target_dir << " from " << old_rootdir;
-        PLOG(INFO) << "chroot to:" << target_dir;
+      //  PLOG(ERROR)<< "Failed to pivot_root " << target_dir << " from " << old_rootdir;
+       // PLOG(INFO) << "chroot to:" << target_dir;
         chroot(target_dir);
     }
     
     chdir("/");
+
+#ifdef ANDROID
     setup_selinux_context("/");
     create_clrd_fs("/");
+#endif
     
     setup_env();
 
@@ -126,7 +131,7 @@ int destroy_child(void * configs) {
     deinit_rootfs(config->target_dir);
     printf("umount rootfs %s\n", config->target_dir);
     if(umount(config->target_dir) != 0) {
-        PLOG(ERROR)<< "Failed to umount loop device " << config->loop_dev << " to mount point " << config->target_dir;
+     //   PLOG(ERROR)<< "Failed to umount loop device " << config->loop_dev << " to mount point " << config->target_dir;
     }
     return 0;
 }

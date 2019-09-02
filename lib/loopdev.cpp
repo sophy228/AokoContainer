@@ -23,12 +23,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <linux/loop.h>
 
-#include <android-base/logging.h>
+//#include <android-base/logging.h>
 
 #include "loopdev.h"
 #include "privileges.h"
 
+#ifdef ANDROID
 static const char LOOPDEV_PREFIX[]   = "/dev/block/loop";
+#else
+static const char LOOPDEV_PREFIX[]   = "/dev/loop";
+#endif
+
 static int        LOOPDEV_PREFIX_LEN = sizeof(LOOPDEV_PREFIX)/sizeof(LOOPDEV_PREFIX[0])-1;
 
 char * loopdev_find_unused() {
@@ -38,7 +43,7 @@ char * loopdev_find_unused() {
   if(escalate()) return NULL;
 
   if((control_fd = open("/dev/loop-control", O_RDWR)) < 0) {
-    PLOG(ERROR) << "Failed to open /dev/loop-control";
+  //  PLOG(ERROR) << "Failed to open /dev/loop-control";
     return NULL;
   }
 
@@ -47,7 +52,7 @@ char * loopdev_find_unused() {
   n = ioctl(control_fd, LOOP_CTL_GET_FREE);
 
   if(n < 0) {
-    PLOG(ERROR) << "Failed to find a free loop device.";
+  //  PLOG(ERROR) << "Failed to find a free loop device.";
     return NULL;
   }
   
@@ -72,21 +77,23 @@ int loopdev_setup_device(const char * file, uint64_t offset, const char * device
   struct loop_info64 info;
 
   if(file_fd < 0) {
-    PLOG(ERROR) << "Failed to open backing file " << file;
+  //  PLOG(ERROR) << "Failed to open backing file " << file;
+    printf("Failed to open backing file %s\n",file);
     goto error;
   }
 
   if(escalate()) goto error;
 
   if((device_fd = open(device, O_RDWR)) < 0) {
-    PLOG(ERROR) << "Failed to open device " << device;
+  //  PLOG(ERROR) << "Failed to open device " << device;
+    printf("Failed to open device %s\n",device);
     goto error;
   }
 
   if(drop()) goto error;
 
   if(ioctl(device_fd, LOOP_SET_FD, file_fd) < 0) {
-    PLOG(ERROR) <<  "Failed to set fd.";
+  //  PLOG(ERROR) <<  "Failed to set fd.";
     goto error;
   }
 
@@ -99,7 +106,7 @@ int loopdev_setup_device(const char * file, uint64_t offset, const char * device
   /* info.lo_encrypt_type = 0 => none */
 
   if(ioctl(device_fd, LOOP_SET_STATUS64, &info)) {
-    PLOG(ERROR) << "Failed to set info.";
+  //  PLOG(ERROR) << "Failed to set info.";
     goto error;
   }
 
@@ -125,7 +132,7 @@ int loopdev_unset_device(const char * device) {
 
   if(escalate()) goto error;
   if((device_fd = open(device, O_RDWR)) < 0) {
-    PLOG(ERROR) << "Failed to open device " << device;
+  //  PLOG(ERROR) << "Failed to open device " << device;
     goto error;
   }
 
@@ -136,7 +143,7 @@ int loopdev_unset_device(const char * device) {
   /* info.lo_encrypt_type = 0 => none */
 
   if(ioctl(device_fd, LOOP_SET_STATUS64, &info)) {
-    PLOG(ERROR) << "Failed to set info.";
+  //  PLOG(ERROR) << "Failed to set info.";
     goto error;
   }
 
