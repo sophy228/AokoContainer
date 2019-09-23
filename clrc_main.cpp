@@ -37,6 +37,7 @@ int main(int argc, char * argv[]) {
     }
     
     if(fork() == 0) {
+        printf("exec %s\n", argv[1]);
         execvp(argv[1], &argv[1]);
     }
     struct sigaction sa;

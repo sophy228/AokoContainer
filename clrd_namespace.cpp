@@ -9,7 +9,7 @@
 
 #include "clrd_child_main.h"
 
-#define STACK_SIZE (1024 * 1024)
+#define STACK_SIZE (5*1024 * 1024)
 static char child_stack[STACK_SIZE];
 
 static int flags = CLONE_NEWNS

@@ -71,6 +71,8 @@ int main(int argc, char * argv[]) {
         return -1;
     }
 
+    asprintf(&config.hostname, "%s-%s", "Kuroba", "Aoko");
+
    
     ret = create_loop_dev(config.image_path, 0, &loop_dev);
     if(ret) {

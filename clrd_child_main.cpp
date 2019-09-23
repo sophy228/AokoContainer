@@ -8,6 +8,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <sys/syscall.h>
+#include <string.h>
 
 #include "clrd_linuxinit.h"
 #include "clrd_selinux.h"
@@ -110,6 +111,8 @@ int child_main(void * configs) {
     setup_selinux_context((char *)"/");
     create_clrd_fs((char *)"/");
 #endif
+    if(config->hostname)
+        sethostname(config->hostname, strlen(config->hostname));
     
     setup_env();
 

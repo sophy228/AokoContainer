@@ -5,6 +5,7 @@ struct child_config
     char * target_dir;
     char * image_path;
     char * loop_dev;
+    char * hostname;
     bool new_pid_ns;
     bool no_systemd;
 };

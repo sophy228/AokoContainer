@@ -77,6 +77,27 @@ static struct mount_info mountlist[] = {
         NULL,
     },
     {
+        "/system/lib",
+        "/system/lib",
+        "",
+        MS_BIND,
+        NULL,
+    },
+    {
+        "/vendor/lib",
+        "/vendor/lib",
+        "",
+        MS_BIND,
+        NULL,
+    },
+    {
+        "/apex",
+        "/apex",
+        "",
+        MS_BIND | MS_REC,
+        NULL,
+    },
+    {
         "/storage/self/primary",
         "/root",
         "",
@@ -142,9 +163,9 @@ static int umount_all_fs(const char * parent) {
     }
     while ((read = getline(&line, &len, fp)) != -1) {
         int num1, num2;
-        char  dev[32];
-        char  root[32];
-        char  target[32];
+        char  dev[len];
+        char  root[len];
+        char  target[len];
         //printf("line:%s", line);
         sscanf(line, "%d %d %s %s %s", &num1, &num2, (char *)&dev, (char *)&root, (char *)&target);
         if(strncmp(target, parent, strlen(parent)) == 0) {
@@ -164,13 +185,12 @@ static int umount_all_fs(const char * parent) {
         }
         free(targetlist[i]);
     }
-
     return 0;
-
 }
 
 int unmount_fs(const char * parent){
     umount_all_fs(parent);
+    printf("umount_all_fs done \n");
    /*  int listlen = sizeof(mountlist) / sizeof(mountlist[0]);
     for(int i = listlen - 1; i >= 0; i--) {
         struct mount_info mi = mountlist[i];
@@ -188,7 +208,7 @@ int unmount_fs(const char * parent){
         if(target)
             free(target);
     }*/
-    return 0;
+   return 0;
 }
 
 
