@@ -16,14 +16,14 @@
 //#include <android-base/logging.h>
 #include "clrd_child_main.h"
 char* const exec_args[] = {
-  "/bin/systemd",
-  "--log-level=debug",
-  "--log-target=kmsg",
-  "--log-location"
+(char *) "/bin/systemd",
+(char *) "--log-level=debug",
+(char *)"--log-target=kmsg",
+(char *) "--log-location"
 };
 
 char* const exec_bashargs[] = {
-  "/bin/bash",
+  (char *)"/bin/bash",
   NULL
 };
 
@@ -33,7 +33,8 @@ static int pivot_root(const char *new_root, const char *put_old)
 }
 
 static void mkdir_if_no_exist(char * dir) {
-    struct stat st = {0};
+    struct stat st;
+    memset(&st, 0, sizeof(st));
     if (stat(dir, &st) == -1) {
         mkdir(dir, 0700);
     }
@@ -41,7 +42,7 @@ static void mkdir_if_no_exist(char * dir) {
 
 static void setup_env() {
     //clearenv();
-    putenv("PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:");
+    putenv((char *)"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:");
     char * home = NULL;
     asprintf(&home, "HOME=/%s", getlogin());
     if(home) {
@@ -61,8 +62,8 @@ int child_main(void * configs) {
     char * loop_dev = config->loop_dev;
     char * target_dir = config->target_dir;
     char * old_rootdir;
-    int pid;
-    int status;
+    //int pid;
+    //int status;
 
     capbilities();
     
@@ -106,8 +107,8 @@ int child_main(void * configs) {
     chdir("/");
 
 #ifdef ANDROID
-    setup_selinux_context("/");
-    create_clrd_fs("/");
+    setup_selinux_context((char *)"/");
+    create_clrd_fs((char *)"/");
 #endif
     
     setup_env();

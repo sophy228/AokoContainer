@@ -95,7 +95,8 @@ static struct mount_info mountlist[] = {
 };
 
 static void mkdir_if_no_exist(char * dir) {
-    struct stat st = {0};
+    struct stat st;
+    memset(&st, 0, sizeof(st));
     if (stat(dir, &st) == -1) {
         mkdir(dir, 0700);
     }
@@ -136,7 +137,7 @@ static int umount_all_fs(const char * parent) {
 
     fp = fopen("/proc/self/mountinfo", "r");
     if (fp == NULL) {
-        printf("can't open  mountinfo %s\n");
+        printf("can't open  mountinfo\n");
         return -1;
     }
     while ((read = getline(&line, &len, fp)) != -1) {
@@ -145,7 +146,7 @@ static int umount_all_fs(const char * parent) {
         char  root[32];
         char  target[32];
         //printf("line:%s", line);
-        sscanf(line, "%d %d %s %s %s", &num1, &num2, &dev, &root, &target);
+        sscanf(line, "%d %d %s %s %s", &num1, &num2, (char *)&dev, (char *)&root, (char *)&target);
         if(strncmp(target, parent, strlen(parent)) == 0) {
           //  printf("Retrieved target:%s \n", target);
             asprintf(&targetlist[listleng], "%s", target);

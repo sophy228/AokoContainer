@@ -8,15 +8,16 @@
 #include <linux/sched.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <string.h>
 
 
 #include "lib/ns_lib.h"
 
 static void setup_env() {
     //clearenv();
-    putenv("PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:");
+    putenv((char *)"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:");
     char * home = NULL;
-    asprintf(&home, "HOME=/%s", getlogin());
+    asprintf(&home, (char*)"HOME=/%s", getlogin());
     if(home) {
         putenv(home);
         free(home);
@@ -24,10 +25,10 @@ static void setup_env() {
 }
 
 int main(int argc, char * argv[]) {
-
+    (void)argc;
     enter_clrd_space();
     setup_env();
-    char * home = getenv("HOME");
+    char * home = getenv((char*)"HOME");
     if(home)
         chdir(home);
     else
@@ -38,8 +39,12 @@ int main(int argc, char * argv[]) {
     if(fork() == 0) {
         execvp(argv[1], &argv[1]);
     }
-    sigignore(SIGINT);
+    struct sigaction sa;
+    memset(&sa, 0, sizeof(sa));
+    if(!sigemptyset(&sa.sa_mask)) {
+        sa.sa_handler = SIG_IGN;
+        sigaction(SIGINT, &sa, NULL);
+    }
     waitpid(-1, NULL, 0);
-error1:
     return 0;
 }
