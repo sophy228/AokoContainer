@@ -188,7 +188,8 @@ static int create_fuse(int argc, char *argv[]) {
 }
 
 static void mkdir_if_no_exist(char * dir) {
-    struct stat st = {0};
+    struct stat st;
+	memset(&st, 0, sizeof(st));
     printf("stat %s\n", dir);
     int ret = stat(dir, &st);
     if(ret == 0)

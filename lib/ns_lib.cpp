@@ -16,7 +16,7 @@
 
 static unsigned flags[]={CLONE_NEWUSER, CLONE_NEWUTS, CLONE_NEWPID, CLONE_NEWNET,
                    CLONE_NEWNS, CLONE_NEWIPC};
-static char *nsnames = "user\0uts\0pid\0net\0mnt\0ipc";
+static char *nsnames = (char *)"user\0uts\0pid\0net\0mnt\0ipc";
 
 static int ns_enter(int pid) {
     char filename[FILENAME_MAX];
@@ -25,7 +25,7 @@ static int ns_enter(int pid) {
     int listlen = sizeof(flags) / sizeof(flags[0]);
     while(i < listlen) {
          
-         sprintf(filename, "/proc/%ld/ns/%s", pid, nsnames);
+         sprintf(filename, "/proc/%d/ns/%s", pid, nsnames);
          fd = open(filename, O_RDONLY);
          if (fd == -1) {
              printf("can not open %s\n", filename);

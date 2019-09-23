@@ -34,7 +34,7 @@ static const char LOOPDEV_PREFIX[]   = "/dev/block/loop";
 static const char LOOPDEV_PREFIX[]   = "/dev/loop";
 #endif
 
-static int        LOOPDEV_PREFIX_LEN = sizeof(LOOPDEV_PREFIX)/sizeof(LOOPDEV_PREFIX[0])-1;
+//static int        LOOPDEV_PREFIX_LEN = sizeof(LOOPDEV_PREFIX)/sizeof(LOOPDEV_PREFIX[0])-1;
 
 char * loopdev_find_unused() {
   int control_fd = -1;
