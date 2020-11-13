@@ -22,8 +22,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
 //#include <android-base/logging.h>
-#ifdef ANDROID
-#include <cutils/properties.h>
+#ifdef __ANDROID__
+#include <sys/system_properties.h>
 #define LINUX_PID_PROP  "sys.linux.pid"
 #define LINUX_ROOTDIR_PROP  "sys.linux.rootdir"
 #endif
@@ -66,7 +66,7 @@ usage:
 int main(int argc, char * argv[]) {
     struct child_config config;
 
-#ifdef ANDROID
+#if defined(__ANDROID__) && defined(__SELINUX__)
     if(!selinux_check_pass()) {
         printf("disable selinux or setenforce 0 and retry\n");
         return -1;
@@ -102,8 +102,8 @@ int main(int argc, char * argv[]) {
 #ifdef ANDROID
     char number[20];
     sprintf(number, "%d", child_pid);
-    property_set(LINUX_PID_PROP, number);
-    property_set(LINUX_ROOTDIR_PROP, config.target_dir);
+    __system_property_set(LINUX_PID_PROP, number);
+    __system_property_set(LINUX_ROOTDIR_PROP, config.target_dir);
 #endif
 
     int status;
@@ -111,8 +111,8 @@ int main(int argc, char * argv[]) {
     printf("waited for pid %d:%d\n", child_pid,status);
 
 #ifdef ANDROID
-    property_set(LINUX_PID_PROP, "");
-    property_set(LINUX_ROOTDIR_PROP, "");
+    __system_property_set(LINUX_PID_PROP, "");
+    __system_property_set(LINUX_ROOTDIR_PROP, "");
 #endif
 
     clear_namespace(&config);

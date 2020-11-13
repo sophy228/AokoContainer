@@ -15,6 +15,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <sys/mount.h>
 #include <stddef.h>
 #include <string.h>
+#include <errno.h>
 
 //#include <android-base/logging.h>
 
@@ -80,6 +81,13 @@ static struct mount_info mountlist[] = {
         MS_BIND,
         NULL,
     },
+    {
+        "none",
+        "/dev/pts",
+        "devpts",
+        0,
+        NULL,
+    },
 #ifdef ANDROID
     {
         "/vendor/lib/modules",
@@ -139,12 +147,13 @@ int mount_fs(const char * parent) {
             asprintf(&target, "%s", mi.target);
 
         mkdir_if_no_exist(target);
-#ifdef ANDROID
+#if defined(__ANDROID__) && defined(__SELINUX__)
         change_file_context(target, "u:object_r:clrd_mnt_dir:s0");
 #endif
         int ret = mount(mi.device, target, mi.type, mi.flag, mi.data);
         if(ret) {
            // PLOG(ERROR) << "mount device error at " << target;
+            printf("mount device error at %s, %s", target, strerror(errno));
         }
         if(target)
             free(target);

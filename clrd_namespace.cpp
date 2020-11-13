@@ -18,24 +18,29 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <signal.h>
 #include <unistd.h>
 #include <linux/sched.h>
+#include <string.h>
+#include <errno.h>
 
 #include "clrd_child_main.h"
 
 #define STACK_SIZE (5*1024 * 1024)
 static char child_stack[STACK_SIZE];
 
-static int flags = CLONE_NEWNS
+static int flags = CLONE_NEWNS;
 //		| CLONE_NEWCGROUP
 //		| CLONE_NEWPID
-		| CLONE_NEWIPC
+//		| CLONE_NEWIPC
 //		| CLONE_NEWNET
-		| CLONE_NEWUTS;
+//		| CLONE_NEWUTS;
 
 int create_new_namespace(struct child_config* configs) {
   if(configs->new_pid_ns)
     flags |= CLONE_NEWPID;
-  int child_pid = clone(child_main, child_stack+STACK_SIZE,
+  int child_pid = clone(child_main, child_stack + STACK_SIZE,
     flags | SIGCHLD, configs);
+  if (child_pid < 0) {
+      printf("Failed to clone child, %s\n", strerror(errno));
+  }
   return child_pid;
 }
 

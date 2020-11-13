@@ -77,9 +77,7 @@ int child_main(void * configs) {
     char * old_rootdir;
     //int pid;
     //int status;
-
     capbilities();
-    
     asprintf(&old_rootdir, "%s/%s", target_dir, "old_root");
     printf("mount loop device to %s\n",target_dir);
 
@@ -90,7 +88,7 @@ int child_main(void * configs) {
 
     //PLOG(INFO) << "mount rootfs device:" << loop_dev << " on " << target_dir;
 
-#ifdef ANDROID
+#if defined(__ANDROID__) && defined(__SELINUX__)
     setup_selinux_handle();
 #endif
     /*pid = fork();
@@ -119,7 +117,7 @@ int child_main(void * configs) {
     
     chdir("/");
 
-#ifdef ANDROID
+#if defined(__ANDROID__) && defined(__SELINUX__)
     setup_selinux_context((char *)"/");
     create_clrd_fs((char *)"/");
 #endif

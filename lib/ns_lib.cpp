@@ -9,16 +9,20 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-#include <android-base/logging.h>
-#include <cutils/properties.h>
+
+#ifdef __ANDROID__
+#include <sys/system_properties.h>
+#include <android/log.h>
+#endif
 
 #include <sys/wait.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <linux/sched.h>
+#include <sched.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <string.h>
 
 
 #define LINUX_PID_PROP  "sys.linux.pid"
@@ -58,7 +62,7 @@ int enter_clrd_space() {
     int pid = 0;
     char * rootdir;
 
-    property_get(LINUX_PID_PROP, prop,  NULL);
+    __system_property_get(LINUX_PID_PROP, prop);
     if(strlen(prop) <= 0 ) {
         printf("Linux runtime is not launched \n");
         goto error1;
@@ -68,7 +72,7 @@ int enter_clrd_space() {
     printf("pid:%s %d\n", prop, pid);
     
 
-    property_get(LINUX_ROOTDIR_PROP, prop,  NULL);
+    __system_property_get(LINUX_ROOTDIR_PROP, prop);
     if(strlen(prop) <= 0) {
         printf("Linux root dir is not found \n");
         goto error1;
